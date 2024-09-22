@@ -8,16 +8,9 @@
 import Foundation
 import ARKit
 
-private let protocolIdentifier: UInt32 = 13371337
-
-enum PayloadType: UInt32, RawRepresentable {
-    case cameraUpdate = 1
-    case buttonPress = 2
-}
-
 struct CameraUpdatePayload {
     // Header
-    let magic = protocolIdentifier
+    let magic = MRCProtocol.protocolIdentifier
     let payloadType: UInt32 = PayloadType.cameraUpdate.rawValue
     let payloadLength = UInt32(8 * MemoryLayout<Float32>.size + 2 * MemoryLayout<UInt32>.size)
 
@@ -90,7 +83,7 @@ struct CameraUpdatePayload {
 
 struct ButtonPressPayload {
     // Header
-    let magic = protocolIdentifier
+    let magic = MRCProtocol.protocolIdentifier
     let payloadType: UInt32 = PayloadType.buttonPress.rawValue
     let payloadLength: UInt32 = UInt32(MemoryLayout<UInt8>.size)
 

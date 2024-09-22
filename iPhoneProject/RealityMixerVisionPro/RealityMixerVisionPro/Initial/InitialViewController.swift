@@ -49,10 +49,23 @@ final class InitialViewController: UIViewController {
         guard ARWorldTrackingConfiguration.isSupported,
               ARWorldTrackingConfiguration.supportsFrameSemantics(.personSegmentationWithDepth)
         else {
-            // TODO: Show alert
+            let alert = UIAlertController(
+                title: "Error",
+                message: "This device does not support Person Segmentation with Depth",
+                preferredStyle: .alert
+            )
+
+            alert.addAction(.init(title: "Cancel", style: .cancel, handler: nil))
+            present(alert, animated: true, completion: nil)
             return
         }
 
+        CameraPermissionHelper.ensurePermission(from: self) { [weak self] in
+            self?.startConnection()
+        }
+    }
+
+    private func startConnection() {
         guard let address = addressTextField.text, !address.isEmpty,
             let portText = portTextField.text, !portText.isEmpty,
             let port = Int32(portText)

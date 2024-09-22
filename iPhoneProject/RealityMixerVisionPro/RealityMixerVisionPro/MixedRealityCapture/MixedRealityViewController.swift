@@ -38,6 +38,11 @@ class MixedRealityViewController: UIViewController, ARSCNViewDelegate {
     private var foregroundNode: SCNNode?
 
     private let sender: CameraUpdateSender
+    private var receiver: MixedRealityReceiver?
+
+    private var lastFrame: CVPixelBuffer?
+
+    var receivedFirstFrame = false
 
     init(client: TCPClient, configuration: MixedRealityConfiguration) {
         self.client = client
@@ -56,6 +61,7 @@ class MixedRealityViewController: UIViewController, ARSCNViewDelegate {
         configureDisplayLink()
         configureTap()
         configureBackgroundEvent()
+        configureReceiver()
         configureScene()
     }
 
@@ -88,6 +94,10 @@ class MixedRealityViewController: UIViewController, ARSCNViewDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(willResignActive), name: UIApplication.willResignActiveNotification, object: nil)
     }
 
+    private func configureReceiver() {
+        self.receiver = MixedRealityReceiver(delegate: self)
+    }
+
     private func configureScene() {
         sceneView.rendersCameraGrain = false
         sceneView.rendersMotionBlur = false
@@ -95,6 +105,8 @@ class MixedRealityViewController: UIViewController, ARSCNViewDelegate {
         let scene = SCNScene()
         sceneView.scene = scene
         sceneView.session.delegate = self
+
+        ARKitHelpers.create(textureCache: &textureCache, for: sceneView)
     }
 
     private func prepareARConfiguration() {
@@ -106,17 +118,62 @@ class MixedRealityViewController: UIViewController, ARSCNViewDelegate {
         sceneView.session.run(configuration)
     }
 
-    @objc func update(with sender: CADisplayLink) {
-//        while let data = client.read(65536, timeout: 0), data.count > 0 {
-//            oculusCapture?.add(data: .init(data))
-//        }
-//
-//        oculusCapture?.update()
-//
-//        if let lastFrame = lastFrame {
-//            updateForegroundBackground(with: lastFrame)
-//        }
+    private func configureBackground(with frame: ARFrame) {
+        let backgroundPlaneNode = ARKitHelpers.makePlaneNodeForDistance(100.0, frame: frame)
+        backgroundPlaneNode.geometry?.firstMaterial?.transparencyMode = .rgbZero
+
+        let surfaceShader = Shaders.backgroundSurfaceWithBlackChromaKey // Shaders.backgroundSurface
+
+        backgroundPlaneNode.geometry?.firstMaterial?.shaderModifiers = [
+            .surface: surfaceShader
+        ]
+
+        sceneView.pointOfView?.addChildNode(backgroundPlaneNode)
+        self.backgroundNode = backgroundPlaneNode
     }
+
+    private func configureForeground(with frame: ARFrame) {
+        let foregroundPlaneNode = ARKitHelpers.makePlaneNodeForDistance(0.01, frame: frame)
+
+        foregroundPlaneNode.geometry?.firstMaterial?.transparencyMode = .rgbZero
+
+        foregroundPlaneNode.geometry?.firstMaterial?.shaderModifiers = [
+            .surface: Shaders.foregroundSurface
+        ]
+
+        // FIXME: Semi-transparent textures won't work with person segmentation. They'll
+        // blend with the background instead of blending with the segmented image of the person.
+
+        sceneView.pointOfView?.addChildNode(foregroundPlaneNode)
+        self.foregroundNode = foregroundPlaneNode
+    }
+
+    // MARK: - Update
+
+    @objc func update(with sender: CADisplayLink) {
+        while let data = client.read(65536, timeout: 0), data.count > 0 {
+            receiver?.add(data: .init(data))
+        }
+
+        receiver?.update()
+
+        if let lastFrame = lastFrame {
+            updateForegroundBackground(with: lastFrame)
+        }
+    }
+
+    private func updateForegroundBackground(with pixelBuffer: CVPixelBuffer) {
+        let luma = ARKitHelpers.texture(from: pixelBuffer, format: .r8Unorm, planeIndex: 0, textureCache: textureCache)
+        let chroma = ARKitHelpers.texture(from: pixelBuffer, format: .rg8Unorm, planeIndex: 1, textureCache: textureCache)
+
+        backgroundNode?.geometry?.firstMaterial?.transparent.contents = luma
+        backgroundNode?.geometry?.firstMaterial?.diffuse.contents = chroma
+
+        foregroundNode?.geometry?.firstMaterial?.transparent.contents = luma
+        foregroundNode?.geometry?.firstMaterial?.diffuse.contents = chroma
+    }
+
+    // MARK: - Actions
 
     private func disconnect() {
         invalidate()
@@ -126,8 +183,6 @@ class MixedRealityViewController: UIViewController, ARSCNViewDelegate {
     @objc private func willResignActive() {
         disconnect()
     }
-
-    // MARK: - Actions
 
     private func hideOptions() {
         hideTimer?.invalidate()
@@ -172,7 +227,13 @@ class MixedRealityViewController: UIViewController, ARSCNViewDelegate {
 extension MixedRealityViewController: ARSessionDelegate {
 
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
-        sendCameraUpdate(with: frame)
+        if !receivedFirstFrame {
+            configureBackground(with: frame)
+            configureForeground(with: frame)
+            receivedFirstFrame = true
+        } else {
+            sendCameraUpdate(with: frame)
+        }
     }
 
     func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
@@ -186,5 +247,12 @@ extension MixedRealityViewController {
         DispatchQueue.main.async { [weak sender] in
             sender?.sendCameraUpdate(payload)
         }
+    }
+}
+
+extension MixedRealityViewController: MixedRealityReceiverDelegate {
+
+    func receiver(_ receiver: MixedRealityReceiver, didReceive pixelBuffer: CVPixelBuffer) {
+        lastFrame = pixelBuffer
     }
 }
