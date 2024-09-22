@@ -10,8 +10,7 @@ import ARKit
 import RealityKit
 import OSLog
 
-@MainActor
-let logger = Logger(subsystem: "ParticlePhysics", category: "general")
+let logger = Logger(subsystem: "RealityMixerExample", category: "general")
 
 @Observable
 @MainActor
@@ -60,6 +59,9 @@ final class AppViewModel {
 
         particlesEntity.addChild(EntityBuilder.buildBox())
 
+        // We'll only render the particles and box in the Mixed Reality video
+        mrcManager.referenceEntity = particlesEntity
+
         let forcesEntity = Entity()
         forcesEntity.components.set(forcesContainer)
         contentEntity.addChild(forcesEntity)
@@ -67,12 +69,6 @@ final class AppViewModel {
         externalCameraEntity.position = Vector3(0, 1.5, -2.0)
         externalCameraEntity.addChild(EntityBuilder.makeBase())
         contentEntity.addChild(externalCameraEntity)
-
-//        if let externalCamera = attachments.entity(for: "externalCameraOutput") {
-//            externalCameraEntity.addChild(externalCamera)
-//            externalCameraEntity.look(at: [particlesPosition.x, externalCameraPosition.y, particlesPosition.z], from: externalCameraPosition, relativeTo: nil)
-//            contentEntity.addChild(externalCameraEntity)
-//        }
 
         contentEntity.transform.translation = .zero
         return contentEntity

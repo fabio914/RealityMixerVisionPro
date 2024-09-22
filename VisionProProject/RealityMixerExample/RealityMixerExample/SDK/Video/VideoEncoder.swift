@@ -69,7 +69,6 @@ final class VideoEncoder {
             CMVideoFormatDescriptionGetH264ParameterSetAtIndex(description, parameterSetIndex: 0, parameterSetPointerOut: nil, parameterSetSizeOut: nil, parameterSetCountOut: &numParams, nalUnitHeaderLengthOut: nil)
 
             //write each param-set to elementary stream
-            print("Write param to elementaryStream ", numParams)
             for i in 0..<numParams {
                 var parameterSetPointer: UnsafePointer<UInt8>?
                 var parameterSetLength: Int = 0
@@ -119,10 +118,8 @@ final class VideoEncoder {
                 elementaryStream.append(bufferDataPointer! + bufferOffset + AVCCHeaderLength, length: Int(NALUnitLength))
                 // Move to the next NAL unit in the block buffer
                 bufferOffset += AVCCHeaderLength + size_t(NALUnitLength);
-                print("Moving to next NALU...")
             }
         }
-        print("Read completed...")
 
         return Data(elementaryStream)
     }

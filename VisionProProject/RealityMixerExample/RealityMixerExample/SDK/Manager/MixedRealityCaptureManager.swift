@@ -20,12 +20,17 @@ final class MixedRealityCaptureManager {
 
     private var displayLink: CADisplayLink?
 
+    // Camera Tracking
     private var cameraExtrinsic: Pose?
     private(set) var imageAnchorToWorld: Pose?
     private(set) var cameraToWorld: Pose?
 
+    // Mixed Reality Rendering
     private var encoder: VideoEncoder?
-    private var cameraIntrinsic: CameraIntrinsic?
+    private var renderer: MixedRealityRenderer?
+
+    // This will be cloned and used to render the Mixed Reality video
+    var referenceEntity: Entity?
 
     var cameraInWorldCoordinates: Pose? {
         guard let cameraExtrinsic, let cameraToWorld else { return nil }
@@ -47,9 +52,30 @@ final class MixedRealityCaptureManager {
         self.displayLink = displayLink
     }
 
+    @MainActor
     @objc private func update(with sender: CADisplayLink) {
         server.update()
 
+        if let encoder, let renderer, let cameraInWorldCoordinates, let referenceEntity {
+            let cameraTransform = Transform(
+                scale: .init(x: 1, y: 1, z: 1),
+                rotation: cameraInWorldCoordinates.rotation,
+                translation: cameraInWorldCoordinates.position
+            )
+
+            do {
+                let frame = try renderer.render(referenceEntity: referenceEntity, cameraTransform: cameraTransform)
+
+                let presentationTime = 0.0
+                let frameDuration = 1.0/60.0
+
+                encoder.encodeFrame(frame, presentationTime: presentationTime, duration: frameDuration) { [weak self] data in
+                    self?.server.send(data: VideoDataPayload.makePayload(encodedVideoData: data))
+                }
+            } catch {
+                logger.error("Failed to render frame: \(error)")
+            }
+        }
     }
 
     @MainActor
@@ -79,14 +105,19 @@ final class MixedRealityCaptureManager {
         let cameraToAnchor = cameraPose.inverse
         self.cameraToWorld = imageAnchorToWorld * flipAnchor * cameraToAnchor
     }
+
+    deinit {
+        encoder?.finalize()
+    }
 }
 
-extension MixedRealityCaptureManager: MixedRealityServerDelegate {
+extension MixedRealityCaptureManager: @preconcurrency MixedRealityServerDelegate {
 
     func didReceiveButtonPress(_ button: UInt8) {
 
     }
 
+    @MainActor
     func didReceiveCameraUpdate(
         _ pose: Pose,
         imageSize: CGSize,
@@ -104,12 +135,21 @@ extension MixedRealityCaptureManager: MixedRealityServerDelegate {
             delegate?.didUpdateCamera(pose: cameraInWorldCoordinates)
         }
 
-        if cameraIntrinsic == nil {
-            self.cameraIntrinsic = .init(imageSize: imageSize, verticalFOV: verticalFOV)
+        if encoder == nil {
+            self.encoder = VideoEncoder(
+                size: .init(width: imageSize.width * 2, height: imageSize.height)
+            )
         }
 
-        if encoder == nil {
-            self.encoder = .init(size: imageSize)
+        if renderer == nil {
+            do {
+                self.renderer = try MixedRealityRenderer(
+                    cameraIntrinsic: .init(imageSize: imageSize, verticalFOV: verticalFOV)
+                )
+            } catch {
+                logger.error("Failed to instantiate renderer: \(error)")
+                self.renderer = nil
+            }
         }
     }
 }

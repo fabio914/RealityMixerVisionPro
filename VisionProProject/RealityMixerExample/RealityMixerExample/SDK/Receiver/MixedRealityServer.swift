@@ -43,7 +43,7 @@ final class MixedRealityServer {
             switch server.listen() {
             case .success:
                 if let client = server.accept() {
-                    print("Accepted client!")
+                    logger.log("Accepted client")
                     self?.client = client
 
                     while !Thread.current.isCancelled {
@@ -52,10 +52,10 @@ final class MixedRealityServer {
                         }
                     }
                 } else {
-                    print("accept error")
+                    logger.error("Failed to accept client")
                 }
             case .failure(let error):
-                print(error)
+                logger.error("Failed to listen: \(error)")
             }
         })
 
