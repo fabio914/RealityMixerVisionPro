@@ -8,6 +8,10 @@ In other words, you can use your iPhone or iPad as a spectator camera.
 
 This app is similar to the [Reality Mixer app](http://github.com/fabio914/RealityMixer) (compatible with the Meta Quest 2/3/Pro) and the [Reality Mixer JS](http://github.com/fabio914/reality-mixer-js/) (compatible with Three.js and WebXR) apps.
 
+Click on the images below to watch the video:
+
+<a href="https://www.youtube.com/watch?v=KzSbWwRCRrg"><img src="Images/video2.jpg" width="400"/></a>
+
 <a href="https://www.youtube.com/watch?v=tPH5eTK-bGM"><img src="Images/video.jpg" width="400"/></a>
 
 Follow us on [Twitter](https://twitter.com/reality_mixer) for more updates!
