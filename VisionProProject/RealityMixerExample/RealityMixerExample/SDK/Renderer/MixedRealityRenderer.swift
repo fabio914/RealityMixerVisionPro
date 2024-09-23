@@ -27,11 +27,14 @@ final class MixedRealityRenderer {
     let device: MTLDevice
     let commandQueue: MTLCommandQueue
 
-    let renderingTexture: MTLTexture
+    let foregroundTexture: MTLTexture
+    let backgroundTexture: MTLTexture
     let streamingTexture: MTLTexture
 
     private let parentEntity = Entity()
     private let camera = PerspectiveCamera()
+    private let cameraNear: Float = 0.01
+    private let cameraFar: Float = 100.0
 
     private let realityRenderer: RealityRenderer
 
@@ -59,7 +62,12 @@ final class MixedRealityRenderer {
         )
 
         textureDescriptor.usage = [.shaderRead, .shaderWrite, .renderTarget]
-        guard let renderingTexture = device.makeTexture(descriptor: textureDescriptor) else {
+
+        guard let foregroundTexture = device.makeTexture(descriptor: textureDescriptor) else {
+            throw MixedRealityRendererError.unableToInstantiateTexture
+        }
+
+        guard let backgroundTexture = device.makeTexture(descriptor: textureDescriptor) else {
             throw MixedRealityRendererError.unableToInstantiateTexture
         }
 
@@ -76,8 +84,8 @@ final class MixedRealityRenderer {
             throw MixedRealityRendererError.unableToInstantiateTexture
         }
 
-
-        self.renderingTexture = renderingTexture
+        self.foregroundTexture = foregroundTexture
+        self.backgroundTexture = backgroundTexture
         self.streamingTexture = streamingTexture
 
         camera.camera.fieldOfViewInDegrees = cameraIntrinsic.verticalFOV
@@ -117,9 +125,17 @@ final class MixedRealityRenderer {
 
         camera.transform = cameraTransform
 
+        let cameraForward = cameraTransform.matrix.forwardVector
+        let cameraPosition = cameraTransform.translation
+        let projectedDistance = min(max(cameraNear, cameraForward.dot(devicePosition - cameraPosition)), cameraFar)
+
         guard let commandBuffer = commandQueue.makeCommandBuffer() else {
             throw MixedRealityRendererError.unableToInstantiateCommandBuffer
         }
+
+        // Rendering Foreground Texture
+        camera.camera.near = cameraNear
+        camera.camera.far = projectedDistance
 
         guard let event = device.makeEvent() else {
             throw MixedRealityRendererError.unableToMakeEvent
@@ -127,7 +143,7 @@ final class MixedRealityRenderer {
 
         do {
             let descriptor = RealityKit.RealityRenderer.CameraOutput.Descriptor.singleProjection(
-                colorTexture: renderingTexture
+                colorTexture: foregroundTexture
             )
 
             try realityRenderer.updateAndRender(
@@ -155,13 +171,13 @@ final class MixedRealityRenderer {
 
         // Blit offscreenTexture to streamingTexture
         blitEncoder.copy(
-            from: renderingTexture,
+            from: backgroundTexture,
             sourceSlice: 0,
             sourceLevel: 0,
             sourceOrigin: MTLOrigin(x: 0, y: 0, z: 0),
             sourceSize: MTLSize(
-                width: renderingTexture.width,
-                height: renderingTexture.height,
+                width: backgroundTexture.width,
+                height: backgroundTexture.height,
                 depth: 1
             ),
             to: streamingTexture,
@@ -174,6 +190,68 @@ final class MixedRealityRenderer {
 
         commandBuffer.commit()
         commandBuffer.waitUntilCompleted()
+
+        // Rendering Background Texture
+        camera.camera.near = projectedDistance
+        camera.camera.far = cameraFar
+
+        guard let backgroundCommandBuffer = commandQueue.makeCommandBuffer() else {
+            throw MixedRealityRendererError.unableToInstantiateCommandBuffer
+        }
+
+        guard let backgroundEvent = device.makeEvent() else {
+            throw MixedRealityRendererError.unableToMakeEvent
+        }
+
+        do {
+            let descriptor = RealityKit.RealityRenderer.CameraOutput.Descriptor.singleProjection(
+                colorTexture: backgroundTexture
+            )
+
+            try realityRenderer.updateAndRender(
+                deltaTime: 0.0,
+                cameraOutput: .init(descriptor),
+                whenScheduled: { _ in
+                },
+                onComplete: { renderer in
+                },
+                actionsBeforeRender: [
+                ],
+                actionsAfterRender: [
+                    .signal(backgroundEvent, value: 1)
+                ]
+            )
+        } catch {
+            print("Error: \(error)")
+        }
+
+        backgroundCommandBuffer.encodeWaitForEvent(backgroundEvent, value: 1)
+
+        guard let backgroundBlitEncoder = backgroundCommandBuffer.makeBlitCommandEncoder() else {
+            throw MixedRealityRendererError.unableToInstantiateBlitEncoder
+        }
+
+        // Blit offscreenTexture to streamingTexture
+        backgroundBlitEncoder.copy(
+            from: backgroundTexture,
+            sourceSlice: 0,
+            sourceLevel: 0,
+            sourceOrigin: MTLOrigin(x: 0, y: 0, z: 0),
+            sourceSize: MTLSize(
+                width: backgroundTexture.width,
+                height: backgroundTexture.height,
+                depth: 1
+            ),
+            to: streamingTexture,
+            destinationSlice: 0,
+            destinationLevel: 0,
+            destinationOrigin: MTLOrigin(x: backgroundTexture.width, y: 0, z: 0)
+        )
+
+        backgroundBlitEncoder.endEncoding()
+
+        backgroundCommandBuffer.commit()
+        backgroundCommandBuffer.waitUntilCompleted()
 
         guard let cvPixelBuffer = streamingTexture.cvPixelBuffer else {
             throw MixedRealityRendererError.unableToInstantiateCVPixelBuffer

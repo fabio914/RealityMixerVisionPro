@@ -29,6 +29,10 @@ extension Vector3 {
         simd.cross(self, other)
     }
 
+    func dot(_ other: Vector3) -> Float {
+        simd.dot(self, other)
+    }
+
     static func * (_ lhs: Vector3, _ rhs: Float) -> Vector3 {
         .init(x: lhs.x * rhs, y: lhs.y * rhs, z: lhs.z * rhs)
     }
@@ -130,5 +134,12 @@ struct Pose {
         let position = simd_make_float3(m.columns.3)
         self.position = Vector3(position.x, position.y, position.z)
         self.rotation = Quaternion(rotationMatrix: SCNMatrix4(m))
+    }
+}
+
+extension simd_float4x4 {
+
+    var forwardVector: Vector3 {
+        Vector3(columns.2.x, columns.2.y, columns.2.z).normalized
     }
 }
