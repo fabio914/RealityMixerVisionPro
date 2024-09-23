@@ -47,40 +47,6 @@ struct Shaders {
 
     """
 
-    static let backgroundSurface = """
-    \(yCrCbToRGB)
-
-    #pragma body
-
-    vec2 backgroundCoords = vec2((_surface.diffuseTexcoord.x * 0.5), _surface.diffuseTexcoord.y);
-
-    float luma = texture2D(u_transparentTexture, backgroundCoords).r;
-    vec2 chroma = texture2D(u_diffuseTexture, backgroundCoords).rg;
-
-    _surface.diffuse = yCbCrToRGB(luma, chroma);
-    _surface.transparent = vec4(0.0, 0.0, 0.0, 1.0);
-    """
-
-    static let backgroundSurfaceWithBlackChromaKey = """
-    \(yCrCbToRGB)
-
-    #pragma body
-
-    vec2 backgroundCoords = vec2((_surface.diffuseTexcoord.x * 0.5), _surface.diffuseTexcoord.y);
-
-    float luma = texture2D(u_transparentTexture, backgroundCoords).r;
-    vec2 chroma = texture2D(u_diffuseTexture, backgroundCoords).rg;
-
-    _surface.diffuse = yCbCrToRGB(luma, chroma);
-
-    if (luma < 0.13) {
-        _surface.transparent = vec4(1.0, 1.0, 1.0, 1.0);
-    } else {
-        _surface.transparent = vec4(0.0, 0.0, 0.0, 1.0);
-    }
-
-    """
-
     static let debugShader = """
     \(yCrCbToRGB)
 
@@ -92,23 +58,46 @@ struct Shaders {
     _surface.diffuse = yCbCrToRGB(luma, chroma);
     """
 
-    static let foregroundSurfaceShared = """
+    static let foregroundSurface = """
     \(yCrCbToRGB)
 
     #pragma body
 
-    vec2 foregroundCoords = vec2((_surface.diffuseTexcoord.x * 0.25) + 0.5, _surface.diffuseTexcoord.y);
+    vec2 foregroundCoords = vec2(_surface.diffuseTexcoord.x * 0.5, _surface.diffuseTexcoord.y * 0.5);
 
     float luma = texture2D(u_transparentTexture, foregroundCoords).r;
     vec2 chroma = texture2D(u_diffuseTexture, foregroundCoords).rg;
 
     _surface.diffuse = yCbCrToRGB(luma, chroma);
+
+    vec2 alphaCoords = vec2(foregroundCoords.x, foregroundCoords.y + 0.5);
+
+    float luma2 = texture2D(u_transparentTexture, alphaCoords).r;
+    vec2 chroma2 = texture2D(u_diffuseTexture, alphaCoords).rg;
+
+    float alpha = yCbCrToRGB(luma2, chroma2).r;
+
+    // Threshold to prevent glitches because of the video compression.
+    float threshold = 0.25;
+    float correctedAlpha = step(threshold, alpha) * alpha;
+
+    float value = (1.0 - correctedAlpha);
+    _surface.transparent = vec4(value, value, value, 1.0);
     """
 
-    static let foregroundSurface = """
-    \(foregroundSurfaceShared)
+    static let backgroundSurface = """
+    \(yCrCbToRGB)
 
-    vec2 alphaCoords = vec2((_surface.transparentTexcoord.x * 0.25) + 0.75, _surface.transparentTexcoord.y);
+    #pragma body
+
+    vec2 backgroundCoords = vec2((_surface.diffuseTexcoord.x * 0.5) + 0.5, _surface.diffuseTexcoord.y * 0.5);
+
+    float luma = texture2D(u_transparentTexture, backgroundCoords).r;
+    vec2 chroma = texture2D(u_diffuseTexture, backgroundCoords).rg;
+
+    _surface.diffuse = yCbCrToRGB(luma, chroma);
+
+    vec2 alphaCoords = vec2(backgroundCoords.x, backgroundCoords.y + 0.5);
 
     float luma2 = texture2D(u_transparentTexture, alphaCoords).r;
     vec2 chroma2 = texture2D(u_diffuseTexture, alphaCoords).rg;
