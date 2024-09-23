@@ -27,7 +27,7 @@ struct CameraUpdatePayload {
     let cameraHeight: UInt32
     let cameraVerticalFOV: Float32
 
-    init?(frame: ARFrame) {
+    init?(frame: ARFrame, scaleFactor: Float) {
         guard case .normal = frame.camera.trackingState else { return nil }
 
         let projection = frame.camera.projectionMatrix
@@ -50,7 +50,10 @@ struct CameraUpdatePayload {
 
         self.init(
             pose: pose,
-            size: imageResolution,
+            size: .init(
+                width: imageResolution.width * CGFloat(scaleFactor),
+                height: imageResolution.height * CGFloat(scaleFactor)
+            ),
             verticalFOV: yFov * radiansToDegrees
         )
     }

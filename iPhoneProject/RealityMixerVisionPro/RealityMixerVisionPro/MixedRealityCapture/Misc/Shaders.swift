@@ -81,6 +81,17 @@ struct Shaders {
 
     """
 
+    static let debugShader = """
+    \(yCrCbToRGB)
+
+    #pragma body
+
+    float luma = texture2D(u_transparentTexture, _surface.diffuseTexcoord).r;
+    vec2 chroma = texture2D(u_diffuseTexture, _surface.diffuseTexcoord).rg;
+
+    _surface.diffuse = yCbCrToRGB(luma, chroma);
+    """
+
     static let foregroundSurfaceShared = """
     \(yCrCbToRGB)
 

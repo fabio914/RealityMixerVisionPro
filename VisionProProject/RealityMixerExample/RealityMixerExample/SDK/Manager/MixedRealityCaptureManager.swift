@@ -159,7 +159,7 @@ extension MixedRealityCaptureManager: @preconcurrency MixedRealityServerDelegate
 
         if encoder == nil {
             self.encoder = VideoEncoder(
-                size: .init(width: imageSize.width * 2, height: imageSize.height)
+                size: .init(width: imageSize.width * 2, height: imageSize.height * 2)
             )
         }
 

@@ -122,7 +122,7 @@ class MixedRealityViewController: UIViewController, ARSCNViewDelegate {
         let backgroundPlaneNode = ARKitHelpers.makePlaneNodeForDistance(100.0, frame: frame)
         backgroundPlaneNode.geometry?.firstMaterial?.transparencyMode = .rgbZero
 
-        let surfaceShader = Shaders.backgroundSurfaceWithBlackChromaKey // Shaders.backgroundSurface
+        let surfaceShader = Shaders.debugShader //Shaders.backgroundSurfaceWithBlackChromaKey // Shaders.backgroundSurface
 
         backgroundPlaneNode.geometry?.firstMaterial?.shaderModifiers = [
             .surface: surfaceShader
@@ -133,19 +133,19 @@ class MixedRealityViewController: UIViewController, ARSCNViewDelegate {
     }
 
     private func configureForeground(with frame: ARFrame) {
-        let foregroundPlaneNode = ARKitHelpers.makePlaneNodeForDistance(0.01, frame: frame)
-
-        foregroundPlaneNode.geometry?.firstMaterial?.transparencyMode = .rgbZero
-
-        foregroundPlaneNode.geometry?.firstMaterial?.shaderModifiers = [
-            .surface: Shaders.foregroundSurface
-        ]
-
-        // FIXME: Semi-transparent textures won't work with person segmentation. They'll
-        // blend with the background instead of blending with the segmented image of the person.
-
-        sceneView.pointOfView?.addChildNode(foregroundPlaneNode)
-        self.foregroundNode = foregroundPlaneNode
+//        let foregroundPlaneNode = ARKitHelpers.makePlaneNodeForDistance(0.01, frame: frame)
+//
+//        foregroundPlaneNode.geometry?.firstMaterial?.transparencyMode = .rgbZero
+//
+//        foregroundPlaneNode.geometry?.firstMaterial?.shaderModifiers = [
+//            .surface: Shaders.foregroundSurface
+//        ]
+//
+//        // FIXME: Semi-transparent textures won't work with person segmentation. They'll
+//        // blend with the background instead of blending with the segmented image of the person.
+//
+//        sceneView.pointOfView?.addChildNode(foregroundPlaneNode)
+//        self.foregroundNode = foregroundPlaneNode
     }
 
     // MARK: - Update
@@ -243,7 +243,7 @@ extension MixedRealityViewController: ARSessionDelegate {
 extension MixedRealityViewController {
 
     func sendCameraUpdate(with frame: ARFrame) {
-        guard let payload = CameraUpdatePayload(frame: frame) else { return }
+        guard let payload = CameraUpdatePayload(frame: frame, scaleFactor: configuration.scaleFactor) else { return }
         DispatchQueue.main.async { [weak sender] in
             sender?.sendCameraUpdate(payload)
         }

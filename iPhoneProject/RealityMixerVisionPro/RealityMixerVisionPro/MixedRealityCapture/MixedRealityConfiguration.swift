@@ -8,6 +8,5 @@
 import Foundation
 
 struct MixedRealityConfiguration {
-
-
+    let scaleFactor: Float = 0.5
 }
