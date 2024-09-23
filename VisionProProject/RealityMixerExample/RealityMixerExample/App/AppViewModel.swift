@@ -12,11 +12,17 @@ import OSLog
 
 let logger = Logger(subsystem: "RealityMixerExample", category: "general")
 
+enum AppViewModelError: Error {
+    case providerNotSupported
+}
+
 @Observable
 @MainActor
 final class AppViewModel {
     let session = ARKitSession()
     let handTracking = HandTrackingProvider()
+    let worldTraking = WorldTrackingProvider()
+
     let imageTracking = ImageTrackingProvider(
         referenceImages: ReferenceImage.loadReferenceImages(inGroupNamed: "AR Resources")
     )
@@ -31,11 +37,11 @@ final class AppViewModel {
     ])
 
     var dataProvidersAreSupported: Bool {
-        HandTrackingProvider.isSupported && ImageTrackingProvider.isSupported
+        HandTrackingProvider.isSupported && ImageTrackingProvider.isSupported && WorldTrackingProvider.isSupported
     }
 
     var isReadyToRun: Bool {
-        handTracking.state == .initialized
+        handTracking.state == .initialized && imageTracking.state == .initialized && worldTraking.state == .initialized
     }
 
     private(set) var hasError: Bool = false
@@ -50,17 +56,20 @@ final class AppViewModel {
     }
 
     func setupContentEntity(_ attachments: RealityViewAttachments) -> Entity {
-        contentEntity.addChild(particlesEntity)
-        particlesEntity.position = particlesPosition
-
         for _ in 0 ..< 100 {
             particlesEntity.addChild(EntityBuilder.buildParticle())
         }
 
         particlesEntity.addChild(EntityBuilder.buildBox())
+        particlesEntity.position = particlesPosition
+
+        let mixedRealityEntity = Entity()
 
         // We'll only render the particles and box in the Mixed Reality video
-        mrcManager.referenceEntity = particlesEntity
+        mixedRealityEntity.addChild(particlesEntity)
+        mrcManager.referenceEntity = mixedRealityEntity
+
+        contentEntity.addChild(mixedRealityEntity)
 
         let forcesEntity = Entity()
         forcesEntity.components.set(forcesContainer)
@@ -72,6 +81,14 @@ final class AppViewModel {
 
         contentEntity.transform.translation = .zero
         return contentEntity
+    }
+
+    func runSession() async throws {
+        if dataProvidersAreSupported && isReadyToRun {
+            try await session.run([handTracking, imageTracking, worldTraking])
+        } else {
+            throw AppViewModelError.providerNotSupported
+        }
     }
 
     func processHandUpdates() async {

@@ -10,6 +10,7 @@ import ARKit
 import RealityKit
 
 protocol MixedRealityCaptureDelegate: AnyObject {
+    var worldTraking: WorldTrackingProvider { get }
     func didUpdateCamera(pose: Pose)
 }
 
@@ -25,12 +26,18 @@ final class MixedRealityCaptureManager {
     private(set) var imageAnchorToWorld: Pose?
     private(set) var cameraToWorld: Pose?
 
+    // Device Tracking
+    private(set) var devicePose: Pose?
+
     // Mixed Reality Rendering
     private var encoder: VideoEncoder?
     private var renderer: MixedRealityRenderer?
 
-    // This will be cloned and used to render the Mixed Reality video
+    // The Mixed Reality video will be rendered with
+    // all the children of this entity.
     var referenceEntity: Entity?
+
+    let framesPerSecond: Double = 30.0
 
     var cameraInWorldCoordinates: Pose? {
         guard let cameraExtrinsic, let cameraToWorld else { return nil }
@@ -47,7 +54,7 @@ final class MixedRealityCaptureManager {
 
     private func configureDisplayLink() {
         let displayLink = CADisplayLink(target: self, selector: #selector(update(with:)))
-        displayLink.preferredFramesPerSecond = 60
+        displayLink.preferredFramesPerSecond = Int(framesPerSecond)
         displayLink.add(to: .main, forMode: .default)
         self.displayLink = displayLink
     }
@@ -56,25 +63,40 @@ final class MixedRealityCaptureManager {
     @objc private func update(with sender: CADisplayLink) {
         server.update()
 
-        if let encoder, let renderer, let cameraInWorldCoordinates, let referenceEntity {
-            let cameraTransform = Transform(
-                scale: .init(x: 1, y: 1, z: 1),
-                rotation: cameraInWorldCoordinates.rotation,
-                translation: cameraInWorldCoordinates.position
+        if let deviceAnchor = delegate?.worldTraking.queryDeviceAnchor(atTimestamp: CACurrentMediaTime()) {
+            self.devicePose = Pose(deviceAnchor.originFromAnchorTransform)
+        }
+
+        guard let encoder,
+           let renderer,
+           let cameraInWorldCoordinates,
+           let referenceEntity,
+           let devicePose
+        else {
+            return
+        }
+
+        let cameraTransform = Transform(
+            scale: .init(x: 1, y: 1, z: 1),
+            rotation: cameraInWorldCoordinates.rotation,
+            translation: cameraInWorldCoordinates.position
+        )
+
+        do {
+            let frame = try renderer.render(
+                referenceEntity: referenceEntity,
+                cameraTransform: cameraTransform,
+                devicePosition: devicePose.position
             )
 
-            do {
-                let frame = try renderer.render(referenceEntity: referenceEntity, cameraTransform: cameraTransform)
+            let presentationTime = 0.0
+            let frameDuration = 1.0/framesPerSecond
 
-                let presentationTime = 0.0
-                let frameDuration = 1.0/60.0
-
-                encoder.encodeFrame(frame, presentationTime: presentationTime, duration: frameDuration) { [weak self] data in
-                    self?.server.send(data: VideoDataPayload.makePayload(encodedVideoData: data))
-                }
-            } catch {
-                logger.error("Failed to render frame: \(error)")
+            encoder.encodeFrame(frame, presentationTime: presentationTime, duration: frameDuration) { [weak self] data in
+                self?.server.send(data: VideoDataPayload.makePayload(encodedVideoData: data))
             }
+        } catch {
+            logger.error("Failed to render frame: \(error)")
         }
     }
 

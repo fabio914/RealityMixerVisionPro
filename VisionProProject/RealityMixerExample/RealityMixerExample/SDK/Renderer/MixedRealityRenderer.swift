@@ -101,12 +101,19 @@ final class MixedRealityRenderer {
     @MainActor
     func render(
         referenceEntity: Entity,
-        cameraTransform: Transform
+        cameraTransform: Transform,
+        devicePosition: Vector3
     ) throws -> CVPixelBuffer {
+        defer {
+            let children = parentEntity.children
+            children.forEach({ referenceEntity.addChild($0) })
+        }
 
-        let clonedEntity = referenceEntity.clone(recursive: true)
+//        let clonedEntity = referenceEntity.clone(recursive: true)
+        let children = referenceEntity.children
+
         parentEntity.children.forEach({ $0.removeFromParent() })
-        parentEntity.addChild(clonedEntity)
+        children.forEach({ parentEntity.addChild($0) })
 
         camera.transform = cameraTransform
 

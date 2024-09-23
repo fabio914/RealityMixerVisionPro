@@ -24,11 +24,7 @@ struct RealityMixerExampleApp: App {
             }
             .task {
                 do {
-                    if model.dataProvidersAreSupported && model.isReadyToRun {
-                        try await model.session.run([model.handTracking, model.imageTracking])
-                    } else {
-                        await dismissImmersiveSpace()
-                    }
+                    try await model.runSession()
                 } catch {
                     logger.error("Failed to start session: \(error)")
                     await dismissImmersiveSpace()
