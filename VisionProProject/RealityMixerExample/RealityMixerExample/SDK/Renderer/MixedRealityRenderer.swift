@@ -145,7 +145,9 @@ final class MixedRealityRenderer {
 
         let cameraForward = cameraTransform.matrix.forwardVector
         let cameraPosition = cameraTransform.translation
-        let projectedDistance = min(max(cameraNear, cameraForward.dot(devicePosition - cameraPosition)), cameraFar)
+
+        let distance = -1.0 * (cameraForward.dot(devicePosition - cameraPosition))
+        let projectedDistance = min(max(cameraNear, distance), cameraFar)
 
         guard let commandBuffer = commandQueue.makeCommandBuffer() else {
             throw MixedRealityRendererError.unableToInstantiateCommandBuffer

@@ -134,7 +134,6 @@ class MixedRealityViewController: UIViewController, ARSCNViewDelegate {
 
     private func configureForeground(with frame: ARFrame) {
         let foregroundPlaneNode = ARKitHelpers.makePlaneNodeForDistance(0.01, frame: frame)
-
         foregroundPlaneNode.geometry?.firstMaterial?.transparencyMode = .rgbZero
 
         foregroundPlaneNode.geometry?.firstMaterial?.shaderModifiers = [
