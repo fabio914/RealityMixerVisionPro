@@ -8,6 +8,7 @@
 import Foundation
 import VideoToolbox
 
+@preconcurrency
 final class VideoEncoder {
     let size: CGSize
     private var compressionSession: VTCompressionSession
@@ -128,7 +129,7 @@ final class VideoEncoder {
         _ frame: CVImageBuffer,
         presentationTime: Double,
         duration: Double,
-        completedFrame: @escaping (_ encodedFrame: Data) -> Void
+        completedFrame: @Sendable @escaping (_ encodedFrame: Data) -> Void
      ) {
          guard !finalized else { return }
 

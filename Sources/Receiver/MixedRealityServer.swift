@@ -6,13 +6,14 @@
 //
 
 import Foundation
-import SwiftSocket
+@preconcurrency import SwiftSocket
 
 protocol MixedRealityServerDelegate: AnyObject {
     func didReceiveButtonPress(_ button: UInt8)
     func didReceiveCameraUpdate(_ pose: Pose, imageSize: CGSize, verticalFOV: Float)
 }
 
+@preconcurrency
 final class MixedRealityServer {
     weak var delegate: MixedRealityServerDelegate?
     private let port: Int32 = 13370

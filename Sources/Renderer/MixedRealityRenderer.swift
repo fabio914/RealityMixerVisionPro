@@ -37,8 +37,8 @@ final class MixedRealityRenderer {
 
     let computePipelineState: MTLComputePipelineState
 
-    private let parentEntity = Entity()
-    private let camera = PerspectiveCamera()
+    private let parentEntity: Entity
+    private let camera: PerspectiveCamera
     private let cameraNear: Float = 0.01
     private let cameraFar: Float = 100.0
 
@@ -97,7 +97,7 @@ final class MixedRealityRenderer {
         self.streamingTexture = streamingTexture
 
         // Compute Pipeline for the Alpha Extractor shader
-        guard let defaultLibrary = device.makeDefaultLibrary(),
+        guard let defaultLibrary = try? device.makeDefaultLibrary(bundle: Bundle.module),
             let kernelFunction = defaultLibrary.makeFunction(name: "textureProcessingKernel"),
             let computePipelineState = try? device.makeComputePipelineState(function: kernelFunction)
         else {
@@ -105,6 +105,9 @@ final class MixedRealityRenderer {
         }
 
         self.computePipelineState = computePipelineState
+
+        self.parentEntity = Entity()
+        self.camera = PerspectiveCamera()
 
         camera.camera.fieldOfViewInDegrees = cameraIntrinsic.verticalFOV
 

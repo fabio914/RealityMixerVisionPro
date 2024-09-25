@@ -8,6 +8,7 @@
 import SwiftUI
 import ARKit
 import RealityKit
+import MixedRealityCapture
 import OSLog
 
 let logger = Logger(subsystem: "RealityMixerExample", category: "general")
@@ -23,9 +24,7 @@ final class AppViewModel {
     let handTracking = HandTrackingProvider()
     let worldTraking = WorldTrackingProvider()
 
-    let imageTracking = ImageTrackingProvider(
-        referenceImages: ReferenceImage.loadReferenceImages(inGroupNamed: "AR Resources")
-    )
+    let imageTracking = MixedRealityImageTracking.imageTrackingProvider()
 
     private(set) var particlesEntity = Entity()
     private(set) var externalCameraEntity = Entity()
@@ -161,5 +160,14 @@ extension AppViewModel: @preconcurrency MixedRealityCaptureDelegate {
             rotation: pose.rotation,
             translation: pose.position
         )
+    }
+}
+
+typealias Vector4 = simd_float4
+
+extension Vector4 {
+
+    var xyz: Vector3 {
+        .init(x: x, y: y, z: z)
     }
 }
