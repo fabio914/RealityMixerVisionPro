@@ -7,13 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		EF8EBCB12CA0AEC3008ED243 /* RealityKitContent in Frameworks */ = {isa = PBXBuildFile; productRef = EF8EBCB02CA0AEC3008ED243 /* RealityKitContent */; };
 		EF8EBCCB2CA0AF9C008ED243 /* SwiftSocket in Frameworks */ = {isa = PBXBuildFile; productRef = EF8EBCCA2CA0AF9C008ED243 /* SwiftSocket */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		EF8EBCAB2CA0AEC3008ED243 /* RealityMixerExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RealityMixerExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		EF8EBCAF2CA0AEC3008ED243 /* RealityKitContent */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = RealityKitContent; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -42,7 +40,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EF8EBCB12CA0AEC3008ED243 /* RealityKitContent in Frameworks */,
 				EF8EBCCB2CA0AF9C008ED243 /* SwiftSocket in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -54,7 +51,6 @@
 			isa = PBXGroup;
 			children = (
 				EF8EBCAD2CA0AEC3008ED243 /* RealityMixerExample */,
-				EF8EBCAE2CA0AEC3008ED243 /* Packages */,
 				EF8EBCAC2CA0AEC3008ED243 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -65,14 +61,6 @@
 				EF8EBCAB2CA0AEC3008ED243 /* RealityMixerExample.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		EF8EBCAE2CA0AEC3008ED243 /* Packages */ = {
-			isa = PBXGroup;
-			children = (
-				EF8EBCAF2CA0AEC3008ED243 /* RealityKitContent */,
-			);
-			path = Packages;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -95,7 +83,6 @@
 			);
 			name = RealityMixerExample;
 			packageProductDependencies = (
-				EF8EBCB02CA0AEC3008ED243 /* RealityKitContent */,
 				EF8EBCCA2CA0AF9C008ED243 /* SwiftSocket */,
 			);
 			productName = RealityMixerExample;
@@ -364,10 +351,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		EF8EBCB02CA0AEC3008ED243 /* RealityKitContent */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = RealityKitContent;
-		};
 		EF8EBCCA2CA0AF9C008ED243 /* SwiftSocket */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = EF8EBCC92CA0AF9C008ED243 /* XCRemoteSwiftPackageReference "SwiftSocket" */;
