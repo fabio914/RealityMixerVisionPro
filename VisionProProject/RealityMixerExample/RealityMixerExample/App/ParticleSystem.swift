@@ -7,6 +7,7 @@
 
 import Foundation
 import RealityKit
+import MixedRealityCapture
 
 enum PhysicsConstants {
     static let minPosition = Vector3(-0.5, -0.5, -0.5) // m

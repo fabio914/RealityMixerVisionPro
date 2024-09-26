@@ -9,9 +9,9 @@ import Foundation
 import SceneKit
 import simd
 
-typealias Vector3 = simd_float3
+public typealias Vector3 = simd_float3
 
-extension Vector3 {
+public extension Vector3 {
 
     var magnitudeSquared: Float {
         x*x + y*y + z*z
@@ -38,18 +38,9 @@ extension Vector3 {
     }
 }
 
-typealias Vector4 = simd_float4
+public typealias Quaternion = simd_quatf
 
-extension Vector4 {
-
-    var xyz: Vector3 {
-        .init(x: x, y: y, z: z)
-    }
-}
-
-typealias Quaternion = simd_quatf
-
-extension Quaternion {
+public extension Quaternion {
 
     var x: Float { vector.x }
     var y: Float { vector.y }
@@ -100,14 +91,14 @@ extension Quaternion {
         self.init(vector: .init(x: x, y: y, z: z, w: w))
     }
 
-    static var identity = Quaternion(x: 0, y: 0, z: 0, w: 1)
+    static let identity = Quaternion(x: 0, y: 0, z: 0, w: 1)
 }
 
-struct Pose {
-    let position: Vector3
-    let rotation: Quaternion
+public struct Pose {
+    public let position: Vector3
+    public let rotation: Quaternion
 
-    var inverse: Pose {
+    public var inverse: Pose {
         let inverseRotation = rotation.inverse
 
         return .init(
@@ -116,21 +107,21 @@ struct Pose {
         )
     }
 
-    static func * (_ lhs: Pose, _ rhs: Pose) -> Pose {
+    public static func * (_ lhs: Pose, _ rhs: Pose) -> Pose {
         .init(
             position: lhs.position + (lhs.rotation * rhs.position),
             rotation: lhs.rotation * rhs.rotation
         )
     }
 
-    static var identity = Pose(position: .zero, rotation: .identity)
+    public static let identity = Pose(position: .zero, rotation: .identity)
 
-    init(position: Vector3, rotation: Quaternion) {
+    public init(position: Vector3, rotation: Quaternion) {
         self.position = position
         self.rotation = rotation
     }
 
-    init(_ m: simd_float4x4) {
+    public init(_ m: simd_float4x4) {
         let position = simd_make_float3(m.columns.3)
         self.position = Vector3(position.x, position.y, position.z)
         self.rotation = Quaternion(rotationMatrix: SCNMatrix4(m))

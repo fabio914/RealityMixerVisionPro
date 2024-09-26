@@ -1,0 +1,15 @@
+{
+  "originHash" : "866732f6afcc2880733e2dcb79238fe4f34738e85648a2e9928c54621201cb47",
+  "pins" : [
+    {
+      "identity" : "swiftsocket",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/fabio914/SwiftSocket",
+      "state" : {
+        "revision" : "4165a4f2de3efb733a7b9c106ce7dd4b809ab294",
+        "version" : "2.1.1"
+      }
+    }
+  ],
+  "version" : 3
+}

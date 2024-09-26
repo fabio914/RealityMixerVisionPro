@@ -7,6 +7,7 @@
 
 import Foundation
 import RealityKit
+import MixedRealityCapture
 
 enum EntityBuilder {
 

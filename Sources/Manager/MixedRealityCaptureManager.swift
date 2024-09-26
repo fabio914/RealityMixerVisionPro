@@ -8,14 +8,28 @@
 import SwiftUI
 import ARKit
 import RealityKit
+import OSLog
 
-protocol MixedRealityCaptureDelegate: AnyObject {
-    var worldTraking: WorldTrackingProvider { get }
+let logger = Logger(subsystem: "MixedRealityCapture", category: "general")
+
+public enum MixedRealityImageTracking {
+
+    public static func loadReferenceImages() -> [ReferenceImage] {
+        ReferenceImage.loadReferenceImages(inGroupNamed: "AR Resources", bundle: Bundle.module)
+    }
+
+    public static func imageTrackingProvider() -> ImageTrackingProvider {
+        ImageTrackingProvider(referenceImages: loadReferenceImages())
+    }
+}
+
+public protocol MixedRealityCaptureDelegate: AnyObject {
+    var worldTracking: WorldTrackingProvider { get }
     func didUpdateCamera(pose: Pose)
 }
 
-final class MixedRealityCaptureManager {
-    var delegate: MixedRealityCaptureDelegate?
+public final class MixedRealityCaptureManager {
+    public var delegate: MixedRealityCaptureDelegate?
 
     private let server: MixedRealityServer
 
@@ -35,7 +49,7 @@ final class MixedRealityCaptureManager {
 
     // The Mixed Reality video will be rendered with
     // all the children of this entity.
-    var referenceEntity: Entity?
+    public var referenceEntity: Entity?
 
     let framesPerSecond: Double = 30.0
 
@@ -44,7 +58,7 @@ final class MixedRealityCaptureManager {
         return cameraToWorld * cameraExtrinsic
     }
 
-    init(delegate: MixedRealityCaptureDelegate? = nil) {
+    public init(delegate: MixedRealityCaptureDelegate? = nil) {
         self.delegate = delegate
         server = .init()
         server.delegate = self
@@ -63,7 +77,7 @@ final class MixedRealityCaptureManager {
     @objc private func update(with sender: CADisplayLink) {
         server.update()
 
-        if let deviceAnchor = delegate?.worldTraking.queryDeviceAnchor(atTimestamp: CACurrentMediaTime()) {
+        if let deviceAnchor = delegate?.worldTracking.queryDeviceAnchor(atTimestamp: CACurrentMediaTime()) {
             self.devicePose = Pose(deviceAnchor.originFromAnchorTransform)
         }
 
@@ -101,7 +115,7 @@ final class MixedRealityCaptureManager {
     }
 
     @MainActor
-    func updateCameraPosition(with imageAnchor: ImageAnchor) {
+    public func updateCameraPosition(with imageAnchor: ImageAnchor) {
         guard imageAnchor.isTracked else { return }
         let pose = Pose(imageAnchor.originFromAnchorTransform)
         self.imageAnchorToWorld = pose

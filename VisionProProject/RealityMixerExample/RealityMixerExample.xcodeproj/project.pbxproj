@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		EF8EBCCB2CA0AF9C008ED243 /* SwiftSocket in Frameworks */ = {isa = PBXBuildFile; productRef = EF8EBCCA2CA0AF9C008ED243 /* SwiftSocket */; };
+		EFC748422CA4C48A00775CA2 /* MixedRealityCapture in Frameworks */ = {isa = PBXBuildFile; productRef = EFC748412CA4C48A00775CA2 /* MixedRealityCapture */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,7 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EF8EBCCB2CA0AF9C008ED243 /* SwiftSocket in Frameworks */,
+				EFC748422CA4C48A00775CA2 /* MixedRealityCapture in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -83,7 +83,7 @@
 			);
 			name = RealityMixerExample;
 			packageProductDependencies = (
-				EF8EBCCA2CA0AF9C008ED243 /* SwiftSocket */,
+				EFC748412CA4C48A00775CA2 /* MixedRealityCapture */,
 			);
 			productName = RealityMixerExample;
 			productReference = EF8EBCAB2CA0AEC3008ED243 /* RealityMixerExample.app */;
@@ -114,7 +114,7 @@
 			mainGroup = EF8EBCA22CA0AEC3008ED243;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				EF8EBCC92CA0AF9C008ED243 /* XCRemoteSwiftPackageReference "SwiftSocket" */,
+				EFC748402CA4C48A00775CA2 /* XCLocalSwiftPackageReference "../../../RealityMixerVisionPro" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = EF8EBCAC2CA0AEC3008ED243 /* Products */;
@@ -339,22 +339,17 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCRemoteSwiftPackageReference section */
-		EF8EBCC92CA0AF9C008ED243 /* XCRemoteSwiftPackageReference "SwiftSocket" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/fabio914/SwiftSocket";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.1.1;
-			};
+/* Begin XCLocalSwiftPackageReference section */
+		EFC748402CA4C48A00775CA2 /* XCLocalSwiftPackageReference "../../../RealityMixerVisionPro" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../../../RealityMixerVisionPro;
 		};
-/* End XCRemoteSwiftPackageReference section */
+/* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		EF8EBCCA2CA0AF9C008ED243 /* SwiftSocket */ = {
+		EFC748412CA4C48A00775CA2 /* MixedRealityCapture */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = EF8EBCC92CA0AF9C008ED243 /* XCRemoteSwiftPackageReference "SwiftSocket" */;
-			productName = SwiftSocket;
+			productName = MixedRealityCapture;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

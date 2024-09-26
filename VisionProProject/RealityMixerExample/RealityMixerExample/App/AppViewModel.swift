@@ -8,6 +8,7 @@
 import SwiftUI
 import ARKit
 import RealityKit
+import MixedRealityCapture
 import OSLog
 
 let logger = Logger(subsystem: "RealityMixerExample", category: "general")
@@ -21,11 +22,9 @@ enum AppViewModelError: Error {
 final class AppViewModel {
     let session = ARKitSession()
     let handTracking = HandTrackingProvider()
-    let worldTraking = WorldTrackingProvider()
+    let worldTracking = WorldTrackingProvider()
 
-    let imageTracking = ImageTrackingProvider(
-        referenceImages: ReferenceImage.loadReferenceImages(inGroupNamed: "AR Resources")
-    )
+    let imageTracking = MixedRealityImageTracking.imageTrackingProvider()
 
     private(set) var particlesEntity = Entity()
     private(set) var externalCameraEntity = Entity()
@@ -41,7 +40,7 @@ final class AppViewModel {
     }
 
     var isReadyToRun: Bool {
-        handTracking.state == .initialized && imageTracking.state == .initialized && worldTraking.state == .initialized
+        handTracking.state == .initialized && imageTracking.state == .initialized && worldTracking.state == .initialized
     }
 
     private(set) var hasError: Bool = false
@@ -85,7 +84,7 @@ final class AppViewModel {
 
     func runSession() async throws {
         if dataProvidersAreSupported && isReadyToRun {
-            try await session.run([handTracking, imageTracking, worldTraking])
+            try await session.run([handTracking, imageTracking, worldTracking])
         } else {
             throw AppViewModelError.providerNotSupported
         }
@@ -161,5 +160,14 @@ extension AppViewModel: @preconcurrency MixedRealityCaptureDelegate {
             rotation: pose.rotation,
             translation: pose.position
         )
+    }
+}
+
+typealias Vector4 = simd_float4
+
+extension Vector4 {
+
+    var xyz: Vector3 {
+        .init(x: x, y: y, z: z)
     }
 }
