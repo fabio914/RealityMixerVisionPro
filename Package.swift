@@ -1,11 +1,11 @@
-// swift-tools-version:6.0
+// swift-tools-version:5.9
 
 import PackageDescription
 
 let package = Package(
     name: "RealityMixerVisionPro",
     platforms: [
-        .visionOS(.v2)
+        .visionOS(.v1)
     ],
     products: [
         .library(

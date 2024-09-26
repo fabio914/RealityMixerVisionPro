@@ -28,7 +28,6 @@ public protocol MixedRealityCaptureDelegate: AnyObject {
     func didUpdateCamera(pose: Pose)
 }
 
-@preconcurrency
 public final class MixedRealityCaptureManager {
     public var delegate: MixedRealityCaptureDelegate?
 

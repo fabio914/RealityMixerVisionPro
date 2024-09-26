@@ -94,7 +94,7 @@ public extension Quaternion {
     static let identity = Quaternion(x: 0, y: 0, z: 0, w: 1)
 }
 
-public struct Pose: Sendable {
+public struct Pose {
     public let position: Vector3
     public let rotation: Quaternion
 
