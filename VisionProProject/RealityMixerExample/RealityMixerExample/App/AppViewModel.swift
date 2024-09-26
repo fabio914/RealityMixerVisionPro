@@ -22,7 +22,7 @@ enum AppViewModelError: Error {
 final class AppViewModel {
     let session = ARKitSession()
     let handTracking = HandTrackingProvider()
-    let worldTraking = WorldTrackingProvider()
+    let worldTracking = WorldTrackingProvider()
 
     let imageTracking = MixedRealityImageTracking.imageTrackingProvider()
 
@@ -40,7 +40,7 @@ final class AppViewModel {
     }
 
     var isReadyToRun: Bool {
-        handTracking.state == .initialized && imageTracking.state == .initialized && worldTraking.state == .initialized
+        handTracking.state == .initialized && imageTracking.state == .initialized && worldTracking.state == .initialized
     }
 
     private(set) var hasError: Bool = false
@@ -84,7 +84,7 @@ final class AppViewModel {
 
     func runSession() async throws {
         if dataProvidersAreSupported && isReadyToRun {
-            try await session.run([handTracking, imageTracking, worldTraking])
+            try await session.run([handTracking, imageTracking, worldTracking])
         } else {
             throw AppViewModelError.providerNotSupported
         }

@@ -24,7 +24,7 @@ public enum MixedRealityImageTracking {
 }
 
 public protocol MixedRealityCaptureDelegate: AnyObject {
-    var worldTraking: WorldTrackingProvider { get }
+    var worldTracking: WorldTrackingProvider { get }
     func didUpdateCamera(pose: Pose)
 }
 
@@ -77,7 +77,7 @@ public final class MixedRealityCaptureManager {
     @objc private func update(with sender: CADisplayLink) {
         server.update()
 
-        if let deviceAnchor = delegate?.worldTraking.queryDeviceAnchor(atTimestamp: CACurrentMediaTime()) {
+        if let deviceAnchor = delegate?.worldTracking.queryDeviceAnchor(atTimestamp: CACurrentMediaTime()) {
             self.devicePose = Pose(deviceAnchor.originFromAnchorTransform)
         }
 
