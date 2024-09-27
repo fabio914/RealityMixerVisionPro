@@ -19,7 +19,6 @@ enum MixedRealityRendererError: Error {
     case unableToMakeEvent
     case unableToInstantiateBlitEncoder
     case unableToInstantiateComputeEncoder
-    case unableToInstantiateCVPixelBuffer
 }
 
 final class MixedRealityRenderer {
@@ -132,7 +131,7 @@ final class MixedRealityRenderer {
         referenceEntity: Entity,
         cameraTransform: Transform,
         devicePosition: Vector3
-    ) throws -> CVPixelBuffer {
+    ) throws -> MTLTexture {
         defer {
             let children = parentEntity.children
             children.forEach({ referenceEntity.addChild($0) })
@@ -346,11 +345,7 @@ final class MixedRealityRenderer {
         alphaBackgroundExtractionCommandBuffer.commit()
         alphaBackgroundExtractionCommandBuffer.waitUntilCompleted()
 
-        guard let cvPixelBuffer = streamingTexture.cvPixelBuffer else {
-            throw MixedRealityRendererError.unableToInstantiateCVPixelBuffer
-        }
-
-        return cvPixelBuffer
+        return streamingTexture
     }
 
     private func extractAlpha(

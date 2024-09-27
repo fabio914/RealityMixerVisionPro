@@ -11,7 +11,11 @@ import VideoToolbox
 final class VideoEncoder {
     let size: CGSize
     private var compressionSession: VTCompressionSession
+    private var pixelBuffer: CVPixelBuffer
     private var finalized = false
+
+    private let width: Int
+    private let height: Int
 
     public init?(size: CGSize) {
         self.size = size
@@ -34,7 +38,34 @@ final class VideoEncoder {
             return nil
         }
 
+        var pixelBuffer: CVPixelBuffer?
+        let pixelFormat = kCVPixelFormatType_32BGRA
+
+        self.width = Int(size.width)
+        self.height = Int(size.height)
+
+        let attributes: [String: Any] = [
+            kCVPixelBufferMetalCompatibilityKey as String: true,
+            kCVPixelBufferWidthKey as String: width,
+            kCVPixelBufferHeightKey as String: height,
+            kCVPixelBufferPixelFormatTypeKey as String: pixelFormat
+        ]
+
+        CVPixelBufferCreate(
+            kCFAllocatorDefault,
+            width,
+            height,
+            pixelFormat,
+            attributes as CFDictionary,
+            &pixelBuffer
+        )
+
+        guard let pixelBuffer else {
+            return nil
+        }
+
         self.compressionSession = session
+        self.pixelBuffer = pixelBuffer
     }
 
     func didEncodeFrame(frame: CMSampleBuffer) -> Data {
@@ -125,19 +156,33 @@ final class VideoEncoder {
     }
 
      func encodeFrame(
-        _ frame: CVImageBuffer,
+        _ frame: MTLTexture,
         presentationTime: Double,
         duration: Double,
         completedFrame: @escaping (_ encodedFrame: Data) -> Void
      ) {
          guard !finalized else { return }
 
+         CVPixelBufferLockBaseAddress(pixelBuffer, CVPixelBufferLockFlags(rawValue: 0))
+
+         guard let pixelBufferBytes = CVPixelBufferGetBaseAddress(pixelBuffer) else {
+            return
+         }
+
+         let bytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer)
+         let region = MTLRegionMake2D(0, 0, self.width, self.height)
+
+         // Assuming the size of the frame is correct!
+         frame.getBytes(pixelBufferBytes, bytesPerRow: bytesPerRow, from: region, mipmapLevel: 0)
+
+         CVPixelBufferUnlockBaseAddress(pixelBuffer, CVPixelBufferLockFlags(rawValue: 0))
+
          let presentationCMTime = CMTime(value: Int64(presentationTime * 1000), timescale: 1000)
          let durationCMTime = CMTime(value: Int64(duration * 1000), timescale: 1000)
 
          VTCompressionSessionEncodeFrame(
              compressionSession,
-             imageBuffer: frame,
+             imageBuffer: pixelBuffer,
              presentationTimeStamp: presentationCMTime,
              duration: durationCMTime,
              frameProperties: nil,
