@@ -13,7 +13,8 @@ struct Shaders {
     #pragma body
 
     vec3 color = texture2D(u_diffuseTexture, _surface.diffuseTexcoord).rgb;
-    _surface.diffuse = color;
+    _surface.diffuse = vec4(color.r, color.g, color.b, 1.0);
+    _surface.transparent = vec4(0.0, 0.0, 0.0, 1.0);
     """
 
     static let foregroundSurface = """
