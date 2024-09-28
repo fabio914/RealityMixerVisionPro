@@ -51,14 +51,22 @@ public final class MixedRealityCaptureManager {
     // all the children of this entity.
     public var referenceEntity: Entity?
 
-    let framesPerSecond: Double = 30.0
+    let framesPerSecond: Double
+    let bitRate: Int
 
     var cameraInWorldCoordinates: Pose? {
         guard let cameraExtrinsic, let cameraToWorld else { return nil }
         return cameraToWorld * cameraExtrinsic
     }
 
-    public init(delegate: MixedRealityCaptureDelegate? = nil) {
+    public init(
+        framesPerSecond: Int = 30,
+        bitRate: Int = 5_000_000,
+        delegate: MixedRealityCaptureDelegate? = nil
+    ) {
+        self.framesPerSecond = Double(max(min(framesPerSecond, 60), 30))
+        self.bitRate = max(min(bitRate, 20_000_000), 500_000)
+
         self.delegate = delegate
         server = .init()
         server.delegate = self
@@ -177,7 +185,9 @@ extension MixedRealityCaptureManager: @preconcurrency MixedRealityServerDelegate
 
         if encoder == nil {
             self.encoder = VideoEncoder(
-                size: .init(width: imageSize.width * 2, height: imageSize.height * 2)
+                size: .init(width: imageSize.width * 2, height: imageSize.height * 2),
+                frameRate: Int(framesPerSecond),
+                bitRate: bitRate
             )
         }
 

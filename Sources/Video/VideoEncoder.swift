@@ -17,7 +17,11 @@ final class VideoEncoder {
     private let width: Int
     private let height: Int
 
-    public init?(size: CGSize) {
+    public init?(
+        size: CGSize,
+        frameRate: Int,
+        bitRate: Int
+    ) {
         self.size = size
         var session: VTCompressionSession?
 
@@ -36,6 +40,32 @@ final class VideoEncoder {
 
         guard let session = session else {
             return nil
+        }
+
+        var err: OSStatus = noErr
+
+        err = VTSessionSetProperty(session, key: kVTCompressionPropertyKey_ProfileLevel, value: kVTProfileLevel_H264_Main_AutoLevel)
+
+        if err != noErr {
+            logger.warning("VTSessionSetProperty(kVTCompressionPropertyKey_ProfileLevel) failed (\(err))")
+        }
+
+        err = VTSessionSetProperty(session, key: kVTCompressionPropertyKey_RealTime, value: kCFBooleanTrue)
+        if noErr != err {
+            logger.warning("VTSessionSetProperty(kVTCompressionPropertyKey_RealTime) failed (\(err))")
+        }
+
+        err = VTSessionSetProperty(session, key: kVTCompressionPropertyKey_AverageBitRate, value: bitRate as CFNumber)
+        if noErr != err {
+            logger.warning("VTSessionSetProperty(kVTCompressionPropertyKey_AverageBitRate) failed (\(err))")
+        }
+
+        let byteLimit = (Double(bitRate) / 8 * 1.5) as CFNumber
+        let secLimit = Double(1.0) as CFNumber
+        let limitsArray = [ byteLimit, secLimit ] as CFArray
+        err = VTSessionSetProperty(session, key: kVTCompressionPropertyKey_DataRateLimits, value: limitsArray)
+        if noErr != err {
+            logger.warning("Warning: VTSessionSetProperty(kVTCompressionPropertyKey_DataRateLimits) failed (\(err))")
         }
 
         var pixelBuffer: CVPixelBuffer?
