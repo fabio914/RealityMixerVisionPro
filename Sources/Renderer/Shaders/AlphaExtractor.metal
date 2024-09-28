@@ -19,7 +19,7 @@ kernel void textureProcessingKernel(
 
     float4 color = inputTexture.read(gid);
 
-    float4 alphaColor = float4(color.a, color.a, color.a, color.a);
+    float4 alphaColor = float4(color.a, color.a, color.a, 1.0);
 
     outputTexture.write(alphaColor, gid);
 }

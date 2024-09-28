@@ -62,8 +62,8 @@ struct ARKitHelpers {
         planeIndex: Int,
         textureCache: CVMetalTextureCache?
     ) -> MTLTexture? {
-        guard let textureCache = textureCache,
-            planeIndex >= 0, planeIndex < CVPixelBufferGetPlaneCount(pixelBuffer) //,
+        guard let textureCache = textureCache //,
+//           planeIndex >= 0, planeIndex < CVPixelBufferGetPlaneCount(pixelBuffer) //,
 //          CVPixelBufferGetPixelFormatType(pixelBuffer) == kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
         else {
             return nil

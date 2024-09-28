@@ -9,73 +9,25 @@ import Foundation
 
 struct Shaders {
 
-    static let yCrCbToRGB = """
-    float BT709_nonLinearNormToLinear(float normV) {
-        if (normV < 0.081) {
-            normV *= (1.0 / 4.5);
-        } else {
-            float a = 0.099;
-            float gamma = 1.0 / 0.45;
-            normV = (normV + a) * (1.0 / (1.0 + a));
-            normV = pow(normV, gamma);
-        }
-        return normV;
-    }
-
-    vec4 yCbCrToRGB(float luma, vec2 chroma) {
-        float y = luma;
-        float u = chroma.r - 0.5;
-        float v = chroma.g - 0.5;
-
-        const float yScale = 255.0 / (235.0 - 16.0); //(BT709_YMax-BT709_YMin)
-        const float uvScale = 255.0 / (240.0 - 16.0); //(BT709_UVMax-BT709_UVMin)
-
-        y = y - 16.0/255.0;
-        float r = y*yScale + v*uvScale*1.5748;
-        float g = y*yScale - u*uvScale*1.8556*0.101 - v*uvScale*1.5748*0.2973;
-        float b = y*yScale + u*uvScale*1.8556;
-
-        r = clamp(r, 0.0, 1.0);
-        g = clamp(g, 0.0, 1.0);
-        b = clamp(b, 0.0, 1.0);
-
-        r = BT709_nonLinearNormToLinear(r);
-        g = BT709_nonLinearNormToLinear(g);
-        b = BT709_nonLinearNormToLinear(b);
-        return vec4(r, g, b, 1.0);
-    }
-
-    """
-
     static let debugShader = """
-    \(yCrCbToRGB)
-
     #pragma body
 
-    float luma = texture2D(u_transparentTexture, _surface.diffuseTexcoord).r;
-    vec2 chroma = texture2D(u_diffuseTexture, _surface.diffuseTexcoord).rg;
-
-    _surface.diffuse = yCbCrToRGB(luma, chroma);
+    vec3 color = texture2D(u_diffuseTexture, _surface.diffuseTexcoord).rgb;
+    _surface.diffuse = color;
     """
 
     static let foregroundSurface = """
-    \(yCrCbToRGB)
-
     #pragma body
 
     vec2 foregroundCoords = vec2(_surface.diffuseTexcoord.x * 0.5, _surface.diffuseTexcoord.y * 0.5);
 
-    float luma = texture2D(u_transparentTexture, foregroundCoords).r;
-    vec2 chroma = texture2D(u_diffuseTexture, foregroundCoords).rg;
+    vec3 color = texture2D(u_diffuseTexture, foregroundCoords).rgb;
 
-    _surface.diffuse = yCbCrToRGB(luma, chroma);
+    _surface.diffuse = vec4(color.r, color.g, color.b, 1.0);
 
     vec2 alphaCoords = vec2(foregroundCoords.x, foregroundCoords.y + 0.5);
 
-    float luma2 = texture2D(u_transparentTexture, alphaCoords).r;
-    vec2 chroma2 = texture2D(u_diffuseTexture, alphaCoords).rg;
-
-    float alpha = yCbCrToRGB(luma2, chroma2).r;
+    float alpha = texture2D(u_diffuseTexture, alphaCoords).r;
 
     // Threshold to prevent glitches because of the video compression.
     float threshold = 0.25;
@@ -86,23 +38,18 @@ struct Shaders {
     """
 
     static let backgroundSurface = """
-    \(yCrCbToRGB)
 
     #pragma body
 
     vec2 backgroundCoords = vec2((_surface.diffuseTexcoord.x * 0.5) + 0.5, _surface.diffuseTexcoord.y * 0.5);
 
-    float luma = texture2D(u_transparentTexture, backgroundCoords).r;
-    vec2 chroma = texture2D(u_diffuseTexture, backgroundCoords).rg;
+    vec3 color = texture2D(u_diffuseTexture, backgroundCoords).rgb;
 
-    _surface.diffuse = yCbCrToRGB(luma, chroma);
+    _surface.diffuse = vec4(color.r, color.g, color.b, 1.0);
 
     vec2 alphaCoords = vec2(backgroundCoords.x, backgroundCoords.y + 0.5);
 
-    float luma2 = texture2D(u_transparentTexture, alphaCoords).r;
-    vec2 chroma2 = texture2D(u_diffuseTexture, alphaCoords).rg;
-
-    float alpha = yCbCrToRGB(luma2, chroma2).r;
+    float alpha = texture2D(u_diffuseTexture, alphaCoords).r;
 
     // Threshold to prevent glitches because of the video compression.
     float threshold = 0.25;

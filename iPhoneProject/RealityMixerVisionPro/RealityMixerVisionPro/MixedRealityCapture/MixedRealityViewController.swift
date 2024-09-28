@@ -162,14 +162,12 @@ class MixedRealityViewController: UIViewController, ARSCNViewDelegate {
     }
 
     private func updateForegroundBackground(with pixelBuffer: CVPixelBuffer) {
-        let luma = ARKitHelpers.texture(from: pixelBuffer, format: .r8Unorm, planeIndex: 0, textureCache: textureCache)
-        let chroma = ARKitHelpers.texture(from: pixelBuffer, format: .rg8Unorm, planeIndex: 1, textureCache: textureCache)
+        let color = ARKitHelpers.texture(from: pixelBuffer, format: .bgra8Unorm, planeIndex: 0, textureCache: textureCache)
+        backgroundNode?.geometry?.firstMaterial?.diffuse.contents = color
+        backgroundNode?.geometry?.firstMaterial?.transparent.contents = color
 
-        backgroundNode?.geometry?.firstMaterial?.transparent.contents = luma
-        backgroundNode?.geometry?.firstMaterial?.diffuse.contents = chroma
-
-        foregroundNode?.geometry?.firstMaterial?.transparent.contents = luma
-        foregroundNode?.geometry?.firstMaterial?.diffuse.contents = chroma
+        foregroundNode?.geometry?.firstMaterial?.diffuse.contents = color
+        foregroundNode?.geometry?.firstMaterial?.transparent.contents = color
     }
 
     // MARK: - Actions

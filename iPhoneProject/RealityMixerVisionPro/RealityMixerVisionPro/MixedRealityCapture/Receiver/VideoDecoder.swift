@@ -204,7 +204,7 @@ final class VideoDecoder {
 
                 let decoderParameters = NSMutableDictionary()
                 let destinationPixelBufferAttributes = NSMutableDictionary()
-                destinationPixelBufferAttributes.setValue(NSNumber(value: kCVPixelFormatType_420YpCbCr8BiPlanarFullRange as UInt32), forKey: kCVPixelBufferPixelFormatTypeKey as String)
+                destinationPixelBufferAttributes.setValue(NSNumber(value: kCVPixelFormatType_32BGRA as UInt32), forKey: kCVPixelBufferPixelFormatTypeKey as String)
 
                 let status = VTDecompressionSessionCreate(
                     allocator: kCFAllocatorDefault,
@@ -226,13 +226,5 @@ final class VideoDecoder {
         }
 
         return true
-    }
-
-    func displayDecodedFrame(_ imageBuffer: CVImageBuffer?) {
-        guard let imageBuffer = imageBuffer else {
-            return
-        }
-
-        delegate?.didDecodeFrame(imageBuffer)
     }
 }

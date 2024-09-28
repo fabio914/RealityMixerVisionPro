@@ -25,13 +25,15 @@ final class VideoEncoder {
         self.size = size
         var session: VTCompressionSession?
 
+        let sourceImageBufferAttributes = [kCVPixelBufferPixelFormatTypeKey: kCVPixelFormatType_32BGRA as CFNumber] as CFDictionary
+
         VTCompressionSessionCreate(
             allocator: nil,
             width: Int32(size.width),
             height: Int32(size.height),
             codecType: kCMVideoCodecType_H264,
             encoderSpecification: nil,
-            imageBufferAttributes: nil,
+            imageBufferAttributes: sourceImageBufferAttributes,
             compressedDataAllocator: nil,
             outputCallback: nil,
             refcon: nil,
@@ -113,7 +115,7 @@ final class VideoEncoder {
             //get value
             let value = CFDictionaryGetValue(dictRef, unsafeBitCast(kCMSampleAttachmentKey_NotSync, to: UnsafeRawPointer.self))
             if ( value != nil ){
-                print ("IFrame found...")
+                //print("IFrame found...")
                 isIFrame = true
             }
         }
@@ -160,7 +162,7 @@ final class VideoEncoder {
             dataPointerOut: &bufferDataPointer
         )
 
-        print ("Block length = ", blockBufferLength)
+        //print("Block length = ", blockBufferLength)
 
         //5. Loop through all the NAL units in the block buffer
         var bufferOffset:size_t = 0
@@ -172,7 +174,7 @@ final class VideoEncoder {
             //Big-Endian to Little-Endian
             NALUnitLength = CFSwapInt32(NALUnitLength)
             if ( NALUnitLength > 0 ){
-                print ( "NALUnitLen = ", NALUnitLength)
+                //print("NALUnitLen = ", NALUnitLength)
                 // Write start code to the elementary stream
                 elementaryStream.append(nStartCode, length: nStartCodeLength)
                 // Write the NAL unit without the AVCC length header to the elementary stream
