@@ -161,7 +161,9 @@ final class VideoEncoder {
         duration: Double,
         completedFrame: @escaping (_ encodedFrame: Data) -> Void
      ) {
-         guard !finalized else { return }
+         guard !finalized else {
+             return
+         }
 
          CVPixelBufferLockBaseAddress(pixelBuffer, CVPixelBufferLockFlags(rawValue: 0))
 
@@ -173,6 +175,9 @@ final class VideoEncoder {
          let region = MTLRegionMake2D(0, 0, self.width, self.height)
 
          // Assuming the size of the frame is correct!
+
+         // FIXME: We shouldn't modify this CVPixelBuffer while a `VTCompressionSessionEncodeFrame`
+         // operation is still running...
          frame.getBytes(pixelBufferBytes, bytesPerRow: bytesPerRow, from: region, mipmapLevel: 0)
 
          CVPixelBufferUnlockBaseAddress(pixelBuffer, CVPixelBufferLockFlags(rawValue: 0))

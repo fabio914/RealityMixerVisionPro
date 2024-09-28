@@ -73,6 +73,8 @@ public final class MixedRealityCaptureManager {
         self.displayLink = displayLink
     }
 
+    private let serverSerialQueue: DispatchQueue = DispatchQueue(label: "serverSerialQueue", qos: .userInteractive)
+
     @MainActor
     @objc private func update(with sender: CADisplayLink) {
         server.update()
@@ -107,7 +109,9 @@ public final class MixedRealityCaptureManager {
             let frameDuration = 1.0/framesPerSecond
 
             encoder.encodeFrame(frame, presentationTime: presentationTime, duration: frameDuration) { [weak self] data in
-                self?.server.send(data: VideoDataPayload.makePayload(encodedVideoData: data))
+                self?.serverSerialQueue.async { [weak self] in
+                    self?.server.send(data: VideoDataPayload.makePayload(encodedVideoData: data))
+                }
             }
         } catch {
             logger.error("Failed to render frame: \(error)")
