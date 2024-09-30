@@ -24,9 +24,9 @@ This is still a very early prototype.
 
 | Name | Screenshot | Video | Description |
 |------|------------|-------|-------------|
-| ParticlePhysics | | | Use your hands to interact with a particle physics simulation. |
-| PaintByBall | | | Paint by shooting balls with finger guns.  |
-| MiniBrush | | | Drawing app based on the [RealityKitDrawingApp](https://developer.apple.com/documentation/realitykit/creating-a-spatial-drawing-app-with-realitykit) example from Apple. |
+| [ParticlePhysics](https://github.com/fabio914/RealityMixerVisionPro/tree/main/VisionProExamples/ParticlePhysics) | | | Use your hands to interact with a particle physics simulation. |
+| [PaintByBall]((https://github.com/fabio914/RealityMixerVisionPro/tree/main/VisionProExamples/PaintByBall)) | | | Paint by shooting balls with finger guns.  |
+| [MiniBrush]((https://github.com/fabio914/RealityMixerVisionPro/tree/main/VisionProExamples/MiniBrush)) | | | Drawing app based on the [RealityKitDrawingApp](https://developer.apple.com/documentation/realitykit/creating-a-spatial-drawing-app-with-realitykit) example from Apple. |
 
 ## What's inside?
 

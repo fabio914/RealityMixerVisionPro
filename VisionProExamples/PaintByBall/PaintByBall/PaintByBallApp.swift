@@ -59,6 +59,8 @@ struct PaintByBallApp: App {
                             .font(.body)
                         Slider(value: $model.ballRadius, in: 0.01...0.2)
                     }
+
+                    Toggle("Paint with left hand", isOn: $model.leftHanded)
                 }
 
                 Color(model.ballColor)

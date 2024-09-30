@@ -54,6 +54,12 @@ final class AppModel {
         }
     }
 
+    var leftHanded: Bool = false
+
+    var acceptedChirality: HandAnchor.Chirality {
+        leftHanded ? .left:.right
+    }
+
     var brushColor: UIColor {
         UIColor(hue: CGFloat(hue), saturation: CGFloat(saturation), brightness: CGFloat(brightness), alpha: 1.0)
     }
@@ -131,7 +137,7 @@ final class AppModel {
             let handAnchor = update.anchor
 
             guard handAnchor.isTracked,
-                handAnchor.chirality == .right, // Right hand only!
+                handAnchor.chirality == acceptedChirality,
                 let thumbTip = handAnchor.handSkeleton?.joint(.thumbTip),
                 let indexFingerTip = handAnchor.handSkeleton?.joint(.indexFingerTip)
             else {

@@ -38,6 +38,12 @@ final class AppModel {
     var saturation: Float = 0.8
     var brightness: Float = 0.8
 
+    var leftHanded: Bool = false
+
+    var acceptedChirality: HandAnchor.Chirality {
+        leftHanded ? .left:.right
+    }
+
     var ballColor: UIColor {
         UIColor(hue: CGFloat(hue), saturation: CGFloat(saturation), brightness: CGFloat(brightness), alpha: 1.0)
     }
@@ -104,7 +110,7 @@ final class AppModel {
         for await update in handTracking.anchorUpdates {
             let handAnchor = update.anchor
 
-            guard handAnchor.chirality == .right,
+            guard handAnchor.chirality == acceptedChirality,
                   handAnchor.isTracked,
                   let indexFingerKnuckle = handAnchor.handSkeleton?.joint(.indexFingerKnuckle),
                   let thumbTip = handAnchor.handSkeleton?.joint(.thumbTip),

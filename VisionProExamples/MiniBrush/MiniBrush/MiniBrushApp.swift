@@ -58,6 +58,8 @@ struct MiniBrushApp: App {
                             .font(.body)
                         Slider(value: $model.brushRadius, in: 0.005...0.05)
                     }
+
+                    Toggle("Draw with left hand", isOn: $model.leftHanded)
                 }
 
                 Color(model.brushColor)
