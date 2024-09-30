@@ -38,6 +38,15 @@ public extension Vector3 {
     }
 }
 
+public typealias Vector4 = simd_float4
+
+public extension Vector4 {
+
+    var xyz: Vector3 {
+        .init(x: x, y: y, z: z)
+    }
+}
+
 public typealias Quaternion = simd_quatf
 
 public extension Quaternion {

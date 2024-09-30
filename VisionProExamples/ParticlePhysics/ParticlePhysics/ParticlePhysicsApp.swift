@@ -1,6 +1,6 @@
 //
-//  RealityMixerExampleApp.swift
-//  RealityMixerExample
+//  ParticlePhysicsApp.swift
+//  ParticlePhysicsApp
 //
 //  Created by Fabio Dela Antonio on 22/09/2024.
 //
@@ -9,7 +9,7 @@ import SwiftUI
 import RealityKit
 
 @main
-struct RealityMixerExampleApp: App {
+struct ParticlePhysicsApp: App {
     @State private var model = AppViewModel()
 
     @Environment(\.dismissImmersiveSpace) var dismissImmersiveSpace

@@ -1,0 +1,48 @@
+#usda 1.0
+(
+    customLayerData = {
+        string creator = "Reality Composer Pro Version 2.0"
+    }
+    defaultPrim = "Root"
+    metersPerUnit = 1
+    upAxis = "Y"
+)
+
+def Xform "Root" (
+    references = None
+)
+{
+    def Material "Material" (
+        references = None
+    )
+    {
+        token outputs:mtlx:surface.connect = </Root/Material/UnlitSurface.outputs:out>
+        token outputs:realitykit:vertex
+        float2 ui:nodegraph:realitykit:subgraphOutputs:pos = (390.6623, 181.93567)
+        int ui:nodegraph:realitykit:subgraphOutputs:stackingOrder = 183
+
+        def Shader "GeomColor" (
+            references = None
+        )
+        {
+            uniform token info:id = "ND_geomcolor_color3"
+            color3f outputs:out
+            float2 ui:nodegraph:node:pos = (-129.47014, 191.35765)
+            int ui:nodegraph:node:stackingOrder = 179
+        }
+
+        def Shader "UnlitSurface"
+        {
+            uniform token info:id = "ND_realitykit_unlit_surfaceshader"
+            bool inputs:applyPostProcessToneMap
+            color3f inputs:color.connect = </Root/Material/GeomColor.outputs:out>
+            bool inputs:hasPremultipliedAlpha
+            float inputs:opacity
+            float inputs:opacityThreshold
+            token outputs:out
+            float2 ui:nodegraph:node:pos = (123.787994, 234.9779)
+            int ui:nodegraph:node:stackingOrder = 181
+        }
+    }
+}
+

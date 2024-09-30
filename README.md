@@ -20,11 +20,19 @@ Follow us on [Twitter](https://twitter.com/reality_mixer) for more updates!
 
 This is still a very early prototype. 
 
+## Examples
+
+| Name | Screenshot | Video | Description |
+|------|------------|-------|-------------|
+| ParticlePhysics | | | Use your hands to interact with a particle physics simulation. |
+| PaintByBall | | | Paint by shooting balls with finger guns.  |
+| MiniBrush | | | Drawing app based on the [RealityKitDrawingApp](https://developer.apple.com/documentation/realitykit/creating-a-spatial-drawing-app-with-realitykit) example from Apple. |
+
 ## What's inside?
 
 This repository contains:
  - A Swift Package (`RealityMixerVisionPro` with the `MixedRealityCapture` library for visionOS).
- - A visionOS demo project (inside `VisionProProject`) that uses the `MixedRealityCapture` library.
+ - A directory with visionOS example projects (inside `VisionProExamples`) that use the `MixedRealityCapture` library.
  - An iOS app (inside `iPhoneProject`) that can connect to visionOS apps that use the `MixedRealityCapture` library, and that can receive, decode, and display the Mixed Reality video.
 
 ## How to use it?
@@ -34,7 +42,7 @@ Requirements:
  - Vision Pro running visionOS 2.
  - Xcode 16.0.
 
-1. Build and install the iOS (inside `iPhoneProject`) and visionOS (inside `VisionProProject`) apps with Xcode 16 (or newer). 
+1. Build and install the iOS app (inside `iPhoneProject`) and one of the visionOS apps (inside `VisionProExamples`) with Xcode 16 (or newer). 
 
 2. First run the visionOS app, then launch the iOS app and type the local IP address of your Vision Pro (assuming that both the iPhone and the Vision Pro are connected to the same local network) and then tap on "Connect".
 

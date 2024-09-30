@@ -1,6 +1,6 @@
 //
 //  ParticleSystem.swift
-//  RealityMixerExample
+//  ParticlePhysicsApp
 //
 //  Created by Fabio Dela Antonio on 22/09/2024.
 //

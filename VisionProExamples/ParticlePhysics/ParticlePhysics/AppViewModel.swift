@@ -1,6 +1,6 @@
 //
 //  AppViewModel.swift
-//  RealityMixerExample
+//  ParticlePhysicsApp
 //
 //  Created by Fabio Dela Antonio on 22/09/2024.
 //
@@ -11,7 +11,7 @@ import RealityKit
 import MixedRealityCapture
 import OSLog
 
-let logger = Logger(subsystem: "RealityMixerExample", category: "general")
+let logger = Logger(subsystem: "ParticlePhysicsApp", category: "general")
 
 enum AppViewModelError: Error {
     case providerNotSupported
@@ -75,7 +75,7 @@ final class AppViewModel {
         contentEntity.addChild(forcesEntity)
 
         externalCameraEntity.position = Vector3(0, 1.5, -2.0)
-        externalCameraEntity.addChild(EntityBuilder.makeBase())
+        externalCameraEntity.addChild(MixedRealityCapture.EntityBuilder.makeGizmo())
         contentEntity.addChild(externalCameraEntity)
 
         contentEntity.transform.translation = .zero
@@ -160,14 +160,5 @@ extension AppViewModel: @preconcurrency MixedRealityCaptureDelegate {
             rotation: pose.rotation,
             translation: pose.position
         )
-    }
-}
-
-typealias Vector4 = simd_float4
-
-extension Vector4 {
-
-    var xyz: Vector3 {
-        .init(x: x, y: y, z: z)
     }
 }
