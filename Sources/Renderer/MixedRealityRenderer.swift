@@ -145,6 +145,11 @@ final class MixedRealityRenderer {
 
         camera.transform = cameraTransform
 
+        // TODO: Receive camera offset from device
+        // Approximate offset for iPhone 15 Pro
+//        camera.position -= (cameraTransform.matrix.rightVector * 0.06)
+//        camera.position += (cameraTransform.matrix.upVector * 0.015)
+
         let cameraForward = cameraTransform.matrix.forwardVector
         let cameraPosition = cameraTransform.translation
 

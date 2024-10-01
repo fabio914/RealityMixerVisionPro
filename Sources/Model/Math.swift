@@ -142,4 +142,12 @@ extension simd_float4x4 {
     var forwardVector: Vector3 {
         Vector3(columns.2.x, columns.2.y, columns.2.z).normalized
     }
+
+//    var rightVector: Vector3 {
+//        Vector3(columns.0.x, columns.0.y, columns.0.z).normalized
+//    }
+//
+//    var upVector: Vector3 {
+//        Vector3(columns.1.x, columns.1.y, columns.1.z).normalized
+//    }
 }
