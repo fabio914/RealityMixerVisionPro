@@ -22,9 +22,9 @@ This is still a very early prototype.
 
 | Name | Screenshot | Video | Description |
 |------|------------|-------|-------------|
-| [MiniBrush](https://github.com/fabio914/RealityMixerVisionPro/tree/main/VisionProExamples/MiniBrush) | <img src="Images/mini_brush.jpg" width="300"/> | [YouTube](https://www.youtube.com/watch?v=7yCegkRXf_4) | Drawing app based on the [RealityKitDrawingApp](https://developer.apple.com/documentation/realitykit/creating-a-spatial-drawing-app-with-realitykit) example from Apple. |
-| [PaintByBall](https://github.com/fabio914/RealityMixerVisionPro/tree/main/VisionProExamples/PaintByBall) | <img src="Images/paint_by_ball.jpg" width="300"/> | [Tweet](https://x.com/fabio914/status/1840130637195554989) | Paint by shooting balls with finger guns. |
-| [ParticlePhysics](https://github.com/fabio914/RealityMixerVisionPro/tree/main/VisionProExamples/ParticlePhysics) | <img src="Images/particle_physics.jpg" width="300"/> | [YouTube](https://www.youtube.com/watch?v=KzSbWwRCRrg) | Use your hands to interact with a particle physics simulation. |
+| [MiniBrush](https://github.com/fabio914/RealityMixerVisionPro/tree/main/VisionProExamples/MiniBrush) | <img src="Images/mini_brush.jpg" width="400"/> | [YouTube](https://www.youtube.com/watch?v=7yCegkRXf_4) | Drawing app based on the [RealityKitDrawingApp](https://developer.apple.com/documentation/realitykit/creating-a-spatial-drawing-app-with-realitykit) example from Apple. |
+| [PaintByBall](https://github.com/fabio914/RealityMixerVisionPro/tree/main/VisionProExamples/PaintByBall) | <img src="Images/paint_by_ball.jpg" width="400"/> | [Tweet](https://x.com/fabio914/status/1840130637195554989) | Paint by shooting balls with finger guns. |
+| [ParticlePhysics](https://github.com/fabio914/RealityMixerVisionPro/tree/main/VisionProExamples/ParticlePhysics) | <img src="Images/particle_physics.jpg" width="400"/> | [YouTube](https://www.youtube.com/watch?v=KzSbWwRCRrg) | Use your hands to interact with a particle physics simulation. |
 
 ## What's inside?
 
