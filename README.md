@@ -8,9 +8,7 @@ In other words, you can use your iPhone or iPad as a spectator camera.
 
 This app is similar to the [Reality Mixer app](http://github.com/fabio914/RealityMixer) (compatible with the Meta Quest 2/3/Pro) and the [Reality Mixer JS](http://github.com/fabio914/reality-mixer-js/) (compatible with Three.js and WebXR) apps.
 
-Click on the images below to watch the video:
-
-<a href="https://www.youtube.com/watch?v=KzSbWwRCRrg"><img src="Images/video2.jpg" width="400"/></a>
+Click on the image below to watch the video:
 
 <a href="https://www.youtube.com/watch?v=tPH5eTK-bGM"><img src="Images/video.jpg" width="400"/></a>
 
@@ -20,11 +18,19 @@ Follow us on [Twitter](https://twitter.com/reality_mixer) for more updates!
 
 This is still a very early prototype. 
 
+## Examples
+
+| Name | Screenshot | Video | Description |
+|------|------------|-------|-------------|
+| [MiniBrush](https://github.com/fabio914/RealityMixerVisionPro/tree/main/VisionProExamples/MiniBrush) | <img src="Images/mini_brush.jpg" width="400"/> | [YouTube](https://www.youtube.com/watch?v=7yCegkRXf_4) | Drawing app based on the [RealityKitDrawingApp](https://developer.apple.com/documentation/realitykit/creating-a-spatial-drawing-app-with-realitykit) example from Apple. |
+| [PaintByBall](https://github.com/fabio914/RealityMixerVisionPro/tree/main/VisionProExamples/PaintByBall) | <img src="Images/paint_by_ball.jpg" width="400"/> | [Tweet](https://x.com/fabio914/status/1840130637195554989) | Paint by shooting balls with finger guns. |
+| [ParticlePhysics](https://github.com/fabio914/RealityMixerVisionPro/tree/main/VisionProExamples/ParticlePhysics) | <img src="Images/particle_physics.jpg" width="400"/> | [YouTube](https://www.youtube.com/watch?v=KzSbWwRCRrg) | Use your hands to interact with a particle physics simulation. |
+
 ## What's inside?
 
 This repository contains:
  - A Swift Package (`RealityMixerVisionPro` with the `MixedRealityCapture` library for visionOS).
- - A visionOS demo project (inside `VisionProProject`) that uses the `MixedRealityCapture` library.
+ - A directory with visionOS example projects (inside `VisionProExamples`) that use the `MixedRealityCapture` library.
  - An iOS app (inside `iPhoneProject`) that can connect to visionOS apps that use the `MixedRealityCapture` library, and that can receive, decode, and display the Mixed Reality video.
 
 ## How to use it?
@@ -34,7 +40,7 @@ Requirements:
  - Vision Pro running visionOS 2.
  - Xcode 16.0.
 
-1. Build and install the iOS (inside `iPhoneProject`) and visionOS (inside `VisionProProject`) apps with Xcode 16 (or newer). 
+1. Build and install the iOS app (inside `iPhoneProject`) and one of the visionOS apps (inside `VisionProExamples`) with Xcode 16 (or newer). 
 
 2. First run the visionOS app, then launch the iOS app and type the local IP address of your Vision Pro (assuming that both the iPhone and the Vision Pro are connected to the same local network) and then tap on "Connect".
 
@@ -203,6 +209,8 @@ extension AppModel: MixedRealityCaptureDelegate {
 
 Developed by [Fabio Dela Antonio](http://github.com/fabio914).
 
-This project uses [SwiftSocket](https://github.com/swiftsocket/SwiftSocket) to handle the TCP connection with the Vision Pro, Apple's VideoToolbox to encode and decode the video stream, and ARKit and RealktyKit. Its video decoder is based on [zerdzhong's SwiftH264Demo](https://github.com/zerdzhong/SwfitH264Demo).
+This project uses [SwiftSocket](https://github.com/swiftsocket/SwiftSocket) to handle the TCP connection with the Vision Pro, Apple's VideoToolbox to encode and decode the video stream, and ARKit and RealityKit. Its video decoder is based on [zerdzhong's SwiftH264Demo](https://github.com/zerdzhong/SwfitH264Demo), and its encoder is based on [Anton Holmberg's](https://stackoverflow.com/users/1092966/anton-holmberg) and [Shay's](https://stackoverflow.com/users/3094082/shay) [example](https://stackoverflow.com/questions/28396622/extracting-h264-from-cmblockbuffer/28491746).
 
 Special thanks to [Yasuhito Nagatomo](https://twitter.com/AtarayoSD) for sharing the `RealityRenderer` example on Twitter.
+
+The `MiniBrush` example project uses code from Apple's [RealityKitDrawingApp](https://developer.apple.com/documentation/realitykit/creating-a-spatial-drawing-app-with-realitykit) sample project.
