@@ -40,6 +40,8 @@ Requirements:
  - Vision Pro running visionOS 2.
  - Xcode 16.0.
 
+**Before building any of the examples**: make sure the directory containing the repository is named `RealityMixerVisionPro` (this might not be the case if you've downloaded and extracted a `.zip` file with the contents of this repository).
+
 1. Build and install the iOS app (inside `iPhoneProject`) and one of the visionOS apps (inside `VisionProExamples`) with Xcode 16 (or newer). 
 
 2. First run the visionOS app, then launch the iOS app and type the local IP address of your Vision Pro (assuming that both the iPhone and the Vision Pro are connected to the same local network) and then tap on "Connect".
